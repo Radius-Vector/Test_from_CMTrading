@@ -1,0 +1,43 @@
+1. Top 10 clients by net deposit
+
+SELECT 
+	original_deposit_owner
+	, [created_month]
+	, vtigeraccountid
+	, Deposit
+	, Withdrawal
+	, isnull(Deposit, 0) - isnull(Withdrawal, 0) AS Net_deposit
+FROM   
+	(SELECT 
+		original_deposit_owner
+		, vtigeraccountid
+		, CONVERT(float, REPLACE(REPLACE(usdamount, '"', ''), ',', '.')) AS usdamount
+		, datetrunc(month, CONVERT(date, [created_time])) AS [created_month]
+		, Transaction_type_name
+     FROM    
+		dbo.Data_Sample_Client_Transactions AS cl1
+     WHERE  
+		Transaction_type_name IN ('Deposit', 'Withdrawal') AND transactionapproval LIKE 'Approved') AS source_table 
+PIVOT (sum(usdamount) FOR Transaction_type_name IN (Deposit, Withdrawal)) AS pvt
+
+----------------------
+
+2. Agent perfomance
+
+SELECT DISTINCT 
+	tr.vtigeraccountid AS clients_num
+	, CONVERT(date, tr.created_time) AS created_time
+	, a.Name, a.role
+	, cl.country
+	, cl.region
+	, tr.ftd
+	, CONVERT(float, REPLACE(REPLACE(tr.usdamount, '"', ''), ',', '.')) AS usdamount_int
+	, tr.Transaction_type_name
+FROM   
+	dbo.Data_Sample_Client_Transactions AS tr 
+INNER JOIN
+    dbo.Data_Sample_Agents AS a 
+	ON tr.original_deposit_owner = a.id 
+LEFT JOIN
+    dbo.Data_Sample_Client_Accounts AS cl 
+	ON tr.vtigeraccountid = cl.accountid
