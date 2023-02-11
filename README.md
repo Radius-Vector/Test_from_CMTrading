@@ -20,7 +20,7 @@ Let's see visual part of my test.
 
 For building grafics I was using [two views](https://github.com/Radius-Vector/Test_from_CMTrading/blob/main/SQL%2C%20views.txt).
 
-[Here you can download Tableau file] (https://github.com/Radius-Vector/Test_from_CMTrading/raw/main/Test%20by%20Dmitrii%20Sitliviy.twbx) and watch dashboard.
+[Here you can download Tableau file and watch dashboard](https://github.com/Radius-Vector/Test_from_CMTrading/raw/main/Test%20by%20Dmitrii%20Sitliviy.twbx).
 
 On top part of dashboard you can see top 10 agents and their sum of deposit and other metrics. You can see this information on different time period and region.
 
