@@ -1,0 +1,138 @@
+select distinct * into Data_Sample_Client_Accounts_1 from [dbo].[Data_Sample_Client_Accounts]
+
+-- 1. Produce a list of transactions with the Account No of the client and the Name of the Agent that owns the transaction
+
+SELECT
+	tr.transaction_no 
+	, cl.account_no
+	, ag.Name
+FROM
+	[dbo].[Data_Sample_Client_Transactions] AS tr
+LEFT JOIN
+	[dbo].[Data_Sample_Client_Accounts] AS cl
+	ON tr.[vtigeraccountid] = cl.[accountid]
+LEFT JOIN
+	[dbo].[Data_Sample_Agents] AS ag
+	ON tr.[original_deposit_owner] = ag.id
+	
+-- 2. Find 10 Client with largest amount of total Net deposits
+
+WITH 
+a as (SELECT 
+		  [vtigeraccountid]
+		  ,sum(convert(float, replace(replace([usdamount], '"',''), ',','.'))) as deposit 
+	  FROM [dbo].[Data_Sample_Client_Transactions] AS cl1
+	  WHERE
+		[Transaction_type_name] LIKE 'Deposit' and [transactionapproval] LIKE 'Approved'
+	  group by [vtigeraccountid]),
+
+b as (SELECT 
+	   [vtigeraccountid]
+      ,sum(convert(float, replace(replace([usdamount], '"',''), ',','.'))) as withdrawal    
+	 FROM [dbo].[Data_Sample_Client_Transactions] AS cl1
+	 WHERE
+		[Transaction_type_name] LIKE 'Withdrawal' and [transactionapproval] LIKE 'Approved'
+	 group by [vtigeraccountid]) 
+
+SELECT TOP 10
+	 a.[vtigeraccountid]
+	,round(a.deposit - ISNULL(b.withdrawal, 0),0) AS Net_deposit
+FROM 
+	a
+LEFT JOIN
+	b
+	on a.vtigeraccountid = b.vtigeraccountid
+order by Net_deposit desc
+	
+	
+-- 3. Rank most frequent First Deposit Amount
+	
+with abc as
+(select 
+	[transaction_no]
+	, [vtigeraccountid]
+	, [ftd]
+	, convert(float, replace(replace([usdamount], '"',''), ',','.')) as first_deposit
+from 
+	[dbo].[Data_Sample_Client_Transactions] 
+where 
+	[Transaction_type_name] like 'Deposit' and  [ftd] = 1)
+
+SELECT	 
+	first_deposit,
+	count([vtigeraccountid]) AS amount_of_1st_dep
+
+FROM
+	ABC
+GROUP BY
+	first_deposit
+ORDER BY 
+	amount_of_1st_dep DESC
+	
+		
+
+-- 4. Find 5 countries with largest Client Value		
+
+WITH 
+a as (SELECT 
+		  [vtigeraccountid]
+		  ,sum(convert(float, replace(replace([usdamount], '"',''), ',','.'))) as deposit 
+	  FROM [dbo].[Data_Sample_Client_Transactions] AS cl1
+	  WHERE
+		[Transaction_type_name] like 'Deposit' and [transactionapproval] like 'Approved'
+	  group by [vtigeraccountid]),
+
+b as (SELECT 
+	   [vtigeraccountid]
+      ,sum(convert(float, replace(replace([usdamount], '"',''), ',','.'))) as withdrawal    
+	 FROM [dbo].[Data_Sample_Client_Transactions] AS cl1
+	 WHERE
+		[Transaction_type_name] like 'Withdrawal'  and [transactionapproval] like 'Approved'
+	 group by [vtigeraccountid]) 
+
+SELECT TOP 5
+	 cl.country
+	,round(sum(a.deposit - ISNULL(b.withdrawal, 0)) / count(cl.accountid), 0) as client_value
+FROM 
+	a
+LEFT JOIN
+	b
+	ON a.[vtigeraccountid] = b.[vtigeraccountid] 
+LEFT JOIN
+	[dbo].[Data_Sample_Client_Accounts] AS cl
+	ON a.vtigeraccountid = cl.[accountid]
+WHERE
+	country IS NOT NULL
+GROUP BY 
+	COUNTRY
+ORDER BY 
+	client_value DESC
+	
+
+-- 5. Find last confirmed deposit and withdrawal of each client: transaction_no, usdamount and created_time
+WITH 
+a AS (SELECT
+		vtigeraccountid
+		, max(convert(date, [confirmation_time])) as max_confirmation
+		, max([transaction_no]) as max_transaction_no
+		, Transaction_type_name
+	FROM
+		[dbo].[Data_Sample_Client_Transactions]
+	WHERE
+		[transactionapproval] like 'Approved' and [Transaction_type_name] in ('Deposit','Withdrawal')
+	GROUP BY
+		vtigeraccountid, Transaction_type_name)
+
+select
+	cl.[vtigeraccountid]
+	,cl.[transaction_no]
+	,convert(date, cl.[created_time]) as created_time
+	,convert(float,replace(replace(cl.[usdamount],'"',''),',','.')) as usdamount
+	,cl.Transaction_type_name
+from [dbo].[Data_Sample_Client_Transactions] as cl 
+join a 
+	on  cl.vtigeraccountid=a.vtigeraccountid 
+	and cl.transaction_no = a.max_transaction_no
+	and cl.[confirmation_time]= a.max_confirmation
+	and cl.Transaction_type_name = a.Transaction_type_name
+order by cl.vtigeraccountid,cl.Transaction_type_name,cl.created_time
