@@ -1,31 +1,27 @@
-Hello! 
-My name is Dmitriy Sitliviy!
-Here I have downloaded my test.
-I was using MS SQL for SQL tasks and Tableau for visualisation
+Hello! My name is Dmitriy Sitliviy! 
+Here I have uploaded my test. 
+I used MS SQL for SQL tasks and Tableau for visualization.
 
-I was working with these programms in my previous company.
+I worked with these programs in my previous company. I created a separate database in MS SQL, and before starting tasks, I explored the data. There were duplicate rows in the "Data Sample Client Accounts" table, but I fixed them.
 
-I created separate database in MS SQL and before tasks I explore data.
-There was duplicate rows in "Data Sample Client Accounts" table. I had fixed it.
+The solution to the SQL tasks is included [this document](https://github.com/Radius-Vector/Test_from_CMTrading/blob/main/SQL%2C%20Test.txt).
 
-Disicion of SQL task I wrote on [this text document](https://github.com/Radius-Vector/Test_from_CMTrading/blob/main/SQL%2C%20Test.txt).
+In the first task, I showed all transactions and whether there was information about the agent name or account number. When this information was absent, I showed NULL.
 
-In first task I showed all transaction and if there was information about agent name or account number. When that information are absent I was show NULL.
+In the third task, I counted the number of certain amounts of deposits and ordered them in descending order.
 
-In third task I counted the number certain amounts of deposits and ordered by descending.
+I thought I should mention these tasks because they seemed ambiguous.
 
-I thought I would should mention about this tasks, becouse they seemed ambiguous.
+Now, let's take a look at the visual part of my test.
 
-Let's see visual part of my test.
-
-For building grafics I was using [two views](https://github.com/Radius-Vector/Test_from_CMTrading/blob/main/SQL%2C%20views.txt).
+To build the graphics, I used [two views](https://github.com/Radius-Vector/Test_from_CMTrading/blob/main/SQL%2C%20views.txt).
 
 [Here you can download Tableau file and watch dashboard](https://github.com/Radius-Vector/Test_from_CMTrading/raw/main/Test%20by%20Dmitrii%20Sitliviy.twbx).
 
-On top part of dashboard you can see top 10 agents and their sum of deposit and other metrics. You can see this information on different time period and region.
+On the top part of the dashboard, you can see the top 10 agents and their sum of deposits and other metrics. You can view this information for different time periods and regions.
 
-I believe that agent who brought company the most money is the best agent.
+I believe that the agent who brought the company the most money is the best agent.
 
-On bottom part of dashboard lays graphic of activities of top 10 clients by net worth.
+On the bottom part of the dashboard, there is a graph of the activities of the top 10 clients by net worth.
 
-That's all what I want to show you! Good bye!
+That's all I wanted to show you! Goodbye!
